@@ -11,12 +11,8 @@
 ```javascript
 
 const AGENT_INFO = {
-  agentId: 155, // to update 
+  agentId: 155, // to update the correct agent in database
   canvasDetails: [
-    /**
-      1. status name field to track status
-      2. 
-    */
     { id: 1, background: BG_BASE64_1, json: "", qrcodeBase64: Qr_BASE64, profileStatus: false, name: 'Wilker' },
     { id: 2, background: BG_BASE64_2, json: "", qrcodeBase64: Qr_BASE64 },
     { id: 3, background: BG_BASE64_3, json: "", qrcodeBase64: Qr_BASE64 },
@@ -25,3 +21,10 @@ const AGENT_INFO = {
 }
 
 ```
+
+# Features
+1. Be saved in Database
+2. Retrieve from server and Updatable
+3. Save as Image & Pdf
+4. Full Size of Pdf | Image ( A4, A5, Original )
+
