@@ -3,7 +3,7 @@ import { fabric } from 'fabric';
 import { useFabric } from '../context/FabricContext'
 
 const InputProfile = () => {
-  const { selectedCanvasDetail, setSelectedCanvasDetail,  canvas, clearCanvas } = useFabric();
+  const { selectedCanvasDetail, setSelectedCanvasDetail, setCanvasObjectStatus, canvasObjectStatus, canvas } = useFabric();
 
   const addIntoCanvas = ( base64) => {
      fabric.Image.fromURL( base64, img => {
@@ -18,8 +18,8 @@ const InputProfile = () => {
       }, { crossOrigin: 'Anonymous' });
 
       oImg.scaleToWidth(180, false)
-      oImg["customType"] = "profile"
-      // oImg.setControlsVisibility({ mtr: false })
+      oImg["customType"] = "profile";
+      oImg["status"] = true;
 
       canvas.add(oImg)
       canvas.requestRenderAll()
@@ -33,13 +33,14 @@ const InputProfile = () => {
     reader.onload = function (event) {
       const base64 = event.target.result;
 
-      addIntoCanvas(base64)
+      addIntoCanvas( base64 );
+      setCanvasObjectStatus({ ...canvasObjectStatus, profile: true });
     }
-    setSelectedCanvasDetail({ ...selectedCanvasDetail, profileStatus: true })
+    setSelectedCanvasDetail( selectedCanvasDetail )
     reader.readAsDataURL(file);
   }
 
-  if (selectedCanvasDetail.profileStatus || selectedCanvasDetail.profileStatus === undefined) return null;
+  if ( canvasObjectStatus.profile ) return null;
 
   return (
     <input onChange={onChangeProfile} type="file" id="profile" />

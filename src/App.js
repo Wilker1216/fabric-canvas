@@ -18,6 +18,7 @@ import Avatar from './components/Avatar';
 import SAMPLE_JSON from "./sample_save_as.json" // From server
 
 let AGENT_INFO = { // default demo use
+  // ...SAMPLE_JSON
   agentId: 155,
   canvasDetails: [
     { id: 1, background: BACKGROUND_1, json: "", qrcodeBase64: QrCodeSample, profileStatus: false, name: 'Wilker' },
@@ -28,7 +29,8 @@ let AGENT_INFO = { // default demo use
 }
 
 const App = () => {
-  const { selectedCanvasDetail, setSelectedCanvasDetail, canvas, setCanvas, addQrcode, agentInfo, setAgentInfo, addName, loadFromJson, setIsSubmit, isSubmit } = useFabric();
+  const [ agentCanvas, setAgentCanvas ] = useState({});
+  const { selectedCanvasDetail, setSelectedCanvasDetail, canvas, setCanvas, setIsSubmit, isSubmit, loadJsonIntoCanvas, loadSelectedCanvasObject } = useFabric();
 
   useEffect(() => {
     const canvas = new fabric.Canvas('canvas', {
@@ -37,21 +39,22 @@ const App = () => {
       selection: false,
     });
     
+    console.log(`AGENT_INFO:: `, AGENT_INFO)
     // Call API & set value into state
-    const defaultCanvasShow = AGENT_INFO.canvasDetails[0]
+    const defaultCanvasShow = AGENT_INFO.canvasDetails[0];
+    
     setCanvas( canvas )
-    setAgentInfo( AGENT_INFO )
+    setAgentCanvas( AGENT_INFO ) // Data getting From API
     setSelectedCanvasDetail( defaultCanvasShow )
 
-    if ( defaultCanvasShow.qrcodeBase64.length ) addQrcode( canvas, defaultCanvasShow.qrcodeBase64 )
-    if ( defaultCanvasShow.name.length ) addName( canvas, defaultCanvasShow.name )
+    loadSelectedCanvasObject( canvas, defaultCanvasShow )
   }, [])
 
   useEffect(() => {
     if (!selectedCanvasDetail.id) return;
 
     // if already saved in database
-    if (selectedCanvasDetail.json.objects?.length) return loadFromJson();
+    if (selectedCanvasDetail.json.objects?.length) return loadJsonIntoCanvas();
 
     const initCanvasBackground = () => {
       fabric.Image.fromURL(selectedCanvasDetail.background, img => {
@@ -62,7 +65,7 @@ const App = () => {
     }
     
     initCanvasBackground();
-  }, [selectedCanvasDetail])
+  }, [ selectedCanvasDetail ])
 
   const exportAsPdf = async ( e ) => {
     const type = e.target.dataset.type;
@@ -91,14 +94,17 @@ const App = () => {
     e.preventDefault();
 
     const tmp = JSON.parse(JSON.stringify(selectedCanvasDetail));
-    tmp.json = canvas.toJSON([ "customType", "selectable", "mtr", "_controlsVisibility" ]);
+    tmp.json = canvas.toJSON([ "customType", "selectable", "mtr", "_controlsVisibility", "status" ]);
     if( !tmp.json.objects?.length ) return alert("Something went wrong")
 
-    const newAgentInfo = agentInfo.canvasDetails.map( obj => obj.id === selectedCanvasDetail.id ? { ...tmp } : obj )
-    const DATA = { agentId: agentInfo.agentId, canvasDetails: newAgentInfo }
+    const newAgentAgentCanvas = agentCanvas.canvasDetails.map( obj => obj.id === selectedCanvasDetail.id ? { ...tmp } : obj )
+    const DATA = { agentId: agentCanvas.agentId, canvasDetails: newAgentAgentCanvas }
 
     try {
       setIsSubmit(true)
+      console.log(DATA)
+      console.log(JSON.stringify(DATA))
+      console.log("------- Demo JSON Send To Server --------")
       const res = await fetch("url", {
         method: "POST",
         headers: {
@@ -115,7 +121,7 @@ const App = () => {
   return (
     <div className="App">
       <div className="features">
-        <CanvasBackground setIsSubmit={setIsSubmit} />
+        <CanvasBackground canvasDetails={ agentCanvas.canvasDetails } />
         <div>
           <InputProfile />
           <Avatar />
@@ -129,7 +135,7 @@ const App = () => {
       <div className="save">
         {
           !isSubmit ?
-            <button onClick={handleSubmit} href="#">Submit</button> :
+            <button onClick={ handleSubmit } href="#">Submit</button> :
             <div className="exports">
               <a onClick={ exportAsImage } href="#">Save as image</a>
               <a onClick={ exportAsPdf } data-type="a4" href="#">Save as A4 pdf</a>

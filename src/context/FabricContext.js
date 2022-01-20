@@ -16,9 +16,9 @@ export const useFabric = () => {
 }
 
 const useFabricProvider = () => {
-    const [agentInfo, setAgentInfo] = useState({});
     const [selectedCanvasDetail, setSelectedCanvasDetail] = useState({});
     const [isSubmit, setIsSubmit] = useState(false)
+    const [ canvasObjectStatus, setCanvasObjectStatus ] = useState({}); // true -> already full || updated
     const [agentName, setAgentName] = useState("");
     const [canvas, setCanvas] = useState('');
 
@@ -53,8 +53,9 @@ const useFabricProvider = () => {
           var canvas = target.canvas;
           switch( target.customType ) {
             case "profile":
-              setSelectedCanvasDetail({ ...selectedCanvasDetail, profileStatus: false });
-              setIsSubmit(false);
+              setSelectedCanvasDetail( selectedCanvasDetail );
+              setIsSubmit( false );
+              setCanvasObjectStatus({ ...canvasObjectStatus, profile: false })
               break;
             case "avatar":
               setSelectedCanvasDetail({ ...selectedCanvasDetail, avatarIsFull: false }); break;
@@ -84,11 +85,16 @@ const useFabricProvider = () => {
         })
     }
 
-    const loadFromJson = () => {
+    const loadJsonIntoCanvas = () => {
         canvas.loadFromJSON(selectedCanvasDetail.json, function() {
-            const allObjects = canvas.getObjects().map(obj => {
-                return obj
+            let canvasObjectStatus = {};
+            selectedCanvasDetail.json.objects.forEach( obj => {
+                const type = obj["customType"];
+                canvasObjectStatus[ type ] = obj.status;
             })
+
+            console.log(`canvasObjectStatus:: `, canvasObjectStatus)
+            setCanvasObjectStatus( canvasObjectStatus );
         })
         setIsSubmit(false)
         canvas.renderAll();
@@ -114,6 +120,7 @@ const useFabricProvider = () => {
         });
         textName.setControlsVisibility({ mtr: false, mt: false, mb: false, tr: false, tl: false, br: false, bl: false, ml: true, mr: true })
         textName["customType"] = "name";
+        textName["status"] = true;
         
         setAgentName( textName )
         canvas.add( textName )
@@ -135,24 +142,29 @@ const useFabricProvider = () => {
 
             img.scaleToWidth(95, false)
             img["customType"] = "qrcode"
+            img["status"] = true
+
             canvas.add(img)
             canvas.requestRenderAll();
         })
     }
 
+    const loadSelectedCanvasObject = ( canvas, selectedCanvas ) => {
+        if ( selectedCanvas.qrcodeBase64?.length ) addQrcode( canvas, selectedCanvas.qrcodeBase64 )
+        if ( selectedCanvas.name?.length ) addName( canvas, selectedCanvas.name )
+    }
+    
     return {
-        setSelectedCanvasDetail,
-        setAgentInfo,
         setCanvas,
-        setIsSubmit,
-        setAgentName,
-        clearCanvas,
-        addQrcode,
-        addName,
+        canvas,
+        setSelectedCanvasDetail,
         selectedCanvasDetail,
-        agentInfo,
+        setIsSubmit,
         isSubmit,
-        loadFromJson,
-        canvas
+        setCanvasObjectStatus,
+        canvasObjectStatus,
+        clearCanvas,
+        loadSelectedCanvasObject,
+        loadJsonIntoCanvas,
     }
 }
