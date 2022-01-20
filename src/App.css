@@ -7,15 +7,11 @@
   padding: 1rem 2rem;
 }
 
-.canvas {
-  border: 2px solid yellow;
-}
-
 .bg-image {
   width: 100px;
 }
 
-.features {
+.features { 
   display: flex;
   align-items: center;
 }

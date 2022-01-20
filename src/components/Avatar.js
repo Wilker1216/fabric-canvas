@@ -2,9 +2,9 @@ import React from 'react'
 import { useFabric } from '../context/FabricContext'
 
 const Avatar = () => {
-  const { currentAgentInfo } = useFabric();
-  
-  if(currentAgentInfo.avatarIsFull || currentAgentInfo.avatarIsFull === undefined) return null;
+  const { selectedCanvasDetail } = useFabric();
+
+  if(selectedCanvasDetail.avatarIsFull || selectedCanvasDetail.avatarIsFull === undefined) return null;
   
   return (
     <label className={``}>

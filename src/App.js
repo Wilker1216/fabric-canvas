@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fabric } from 'fabric';
 import { jsPDF } from "jspdf";
 
@@ -16,20 +16,19 @@ import Avatar from './components/Avatar';
 
 
 import SAMPLE_JSON from "./sample_save_as.json" // From server
-const AGENT_INFO = { // demo use
+
+let AGENT_INFO = { // default demo use
   agentId: 155,
   canvasDetails: [
     { id: 1, background: BACKGROUND_1, json: "", qrcodeBase64: QrCodeSample, profileStatus: false, name: 'Wilker' },
     { id: 2, background: BACKGROUND_2, json: "", qrcodeBase64: "" },
-    { id: 3, background: BACKGROUND_3, json: "", qrcodeBase64: "" },
+    { id: 3, background: BACKGROUND_3, json: "", qrcodeBase64: QrCodeSample },
     { id: 4, background: BACKGROUND_4, json: "", qrcodeBase64: "", avatarIsFull: false, avatars: [] }
   ],
 }
 
-const MODE = "SIT"
-
 const App = () => {
-  const { currentAgentInfo, setCurrentAgentInfo, canvas, setCanvas, addQrcode, agentInfo, setAgentInfo, addName, loadFromJson, setIsSubmit, isSubmit } = useFabric();
+  const { selectedCanvasDetail, setSelectedCanvasDetail, canvas, setCanvas, addQrcode, agentInfo, setAgentInfo, addName, loadFromJson, setIsSubmit, isSubmit } = useFabric();
 
   useEffect(() => {
     const canvas = new fabric.Canvas('canvas', {
@@ -42,29 +41,28 @@ const App = () => {
     const defaultCanvasShow = AGENT_INFO.canvasDetails[0]
     setCanvas( canvas )
     setAgentInfo( AGENT_INFO )
-    setCurrentAgentInfo( defaultCanvasShow )
+    setSelectedCanvasDetail( defaultCanvasShow )
 
     if ( defaultCanvasShow.qrcodeBase64.length ) addQrcode( canvas, defaultCanvasShow.qrcodeBase64 )
     if ( defaultCanvasShow.name.length ) addName( canvas, defaultCanvasShow.name )
   }, [])
 
   useEffect(() => {
-    if (!currentAgentInfo.id) return;
+    if (!selectedCanvasDetail.id) return;
 
     // if already saved in database
-    if (currentAgentInfo.json.objects?.length) return loadFromJson();
+    if (selectedCanvasDetail.json.objects?.length) return loadFromJson();
 
     const initCanvasBackground = () => {
-      fabric.Image.fromURL(currentAgentInfo.background, img => {
+      fabric.Image.fromURL(selectedCanvasDetail.background, img => {
         canvas.backgroundImage = img;
-        img.scaleToHeight(500, false)
+        img.scaleToHeight(500)
         canvas.renderAll();
       }, { crossOrigin: 'Anonymous' })
     }
-
+    
     initCanvasBackground();
-  }, [currentAgentInfo])
-
+  }, [selectedCanvasDetail])
 
   const exportAsPdf = async ( e ) => {
     const type = e.target.dataset.type;
@@ -73,7 +71,7 @@ const App = () => {
 
     const width = pdf.internal.pageSize.getWidth();
     const height = pdf.internal.pageSize.getHeight();
-    console.log(`width height pdf: `, width, height)
+
     pdf.addImage(imgData, 'JPEG', 0, 0, width, height)
     pdf.save('canvas.pdf')
   }
@@ -91,21 +89,13 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const tmp = JSON.parse(JSON.stringify(currentAgentInfo));
-    tmp.json = canvas.toJSON([ "customType", "selectable", "mtr", "_controlsVisibility" ]);
 
+    const tmp = JSON.parse(JSON.stringify(selectedCanvasDetail));
+    tmp.json = canvas.toJSON([ "customType", "selectable", "mtr", "_controlsVisibility" ]);
     if( !tmp.json.objects?.length ) return alert("Something went wrong")
 
-    const newAgentInfo = agentInfo.canvasDetails.map( obj => obj.id === currentAgentInfo.id ? { ...tmp } : obj )
+    const newAgentInfo = agentInfo.canvasDetails.map( obj => obj.id === selectedCanvasDetail.id ? { ...tmp } : obj )
     const DATA = { agentId: agentInfo.agentId, canvasDetails: newAgentInfo }
-
-    if (MODE === 'SIT') {
-      setIsSubmit(true)
-
-      console.log(JSON.stringify(DATA))
-      console.log("------ DEMO DATA SEND TO SERVER ----")
-      return true;
-    }
 
     try {
       setIsSubmit(true)
@@ -116,7 +106,6 @@ const App = () => {
         },
         body: JSON.stringify(DATA)
       })
-      console.log(res.json())
     } catch (error) {
       setIsSubmit(false)
       alert("Failed to submit")
@@ -133,7 +122,7 @@ const App = () => {
         </div>
       </div>
 
-      <div style={{ border: "2px solid yellow" }}>
+      <div>
         <canvas id="canvas" />
       </div>
 
@@ -148,8 +137,6 @@ const App = () => {
             </div>
         }
       </div>
-
-
     </div>
   );
 }

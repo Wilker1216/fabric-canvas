@@ -27,4 +27,9 @@ const AGENT_INFO = {
 2. Retrieve from server and Updatable
 3. Save as Image & Pdf
 4. Full Size of Pdf | Image ( A4, A5, Original )
+5. Admin allow to create clipPath ( Phase 2 )
+6. Admin allow to draw Circle & Rectangle image ( Phase 2 )
+7. Drag and Drop ( Phase 2 )
 
+# Logs
+1. Last Template Feature is not completed yet.

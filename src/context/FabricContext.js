@@ -17,15 +17,15 @@ export const useFabric = () => {
 
 const useFabricProvider = () => {
     const [agentInfo, setAgentInfo] = useState({});
-    const [currentAgentInfo, setCurrentAgentInfo] = useState({});
+    const [selectedCanvasDetail, setSelectedCanvasDetail] = useState({});
     const [isSubmit, setIsSubmit] = useState(false)
     const [agentName, setAgentName] = useState("");
     const [canvas, setCanvas] = useState('');
 
     useEffect(() => {
         initEvents( )
-    }, [])
-
+    }, [ canvas ])
+    
     const initEvents = () => {
         fabric.Object.prototype.transparentCorners = false;
         fabric.Object.prototype.cornerColor = 'blue';
@@ -33,7 +33,7 @@ const useFabricProvider = () => {
         
         customDeleteIcon()
     }
-
+    
     const customDeleteIcon = () => {
         const deleteIcon = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' id='Ebene_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='595.275px' height='595.275px' viewBox='200 215 230 470' xml:space='preserve'%3E%3Ccircle style='fill:%23F44336;' cx='299.76' cy='439.067' r='218.516'/%3E%3Cg%3E%3Crect x='267.162' y='307.978' transform='matrix(0.7071 -0.7071 0.7071 0.7071 -222.6202 340.6915)' style='fill:white;' width='65.545' height='262.18'/%3E%3Crect x='266.988' y='308.153' transform='matrix(0.7071 0.7071 -0.7071 0.7071 398.3889 -83.3116)' style='fill:white;' width='65.544' height='262.179'/%3E%3C/g%3E%3C/svg%3E";
         let img = document.createElement("img")
@@ -53,13 +53,11 @@ const useFabricProvider = () => {
           var canvas = target.canvas;
           switch( target.customType ) {
             case "profile":
-              setCurrentAgentInfo({ ...currentAgentInfo, profileStatus: false });
+              setSelectedCanvasDetail({ ...selectedCanvasDetail, profileStatus: false });
               setIsSubmit(false);
               break;
             case "avatar":
-              setCurrentAgentInfo({ ...currentAgentInfo, avatarIsFull: false }); break;
-            // case "name": 
-            //   setCurrentAgentInfo({ ...currentAgentInfo, name: "" }); break;
+              setSelectedCanvasDetail({ ...selectedCanvasDetail, avatarIsFull: false }); break;
             default: console.log("Didn't updated")
           }
           
@@ -87,25 +85,26 @@ const useFabricProvider = () => {
     }
 
     const loadFromJson = () => {
-        canvas.loadFromJSON(currentAgentInfo.json, function() {
+        canvas.loadFromJSON(selectedCanvasDetail.json, function() {
             const allObjects = canvas.getObjects().map(obj => {
                 return obj
             })
         })
+        setIsSubmit(false)
         canvas.renderAll();
     }
 
     const addName = ( canvas, name ) => {
         if ( !name.length ) return;
 
-        const clipPath = new fabric.Rect({ width: 40, height: 200, left: 250, top: 130, absolutePositioned: true });
+        const clipPath = new fabric.Rect({ width: 20, height: 200, left: 250, top: 130, absolutePositioned: true });
         const textName = new fabric.IText( name, {
             fontFamily: 'helvetica',
-            fontSize: 40,
-            fontWeight: 700,
+            fontSize: 20,
+            fontWeight: 600,
             fill: "#000",
             top: 130,
-            left: 290,
+            left: 270,
             angle: 90,
             hasBorders: false,
             editable: false,
@@ -142,7 +141,7 @@ const useFabricProvider = () => {
     }
 
     return {
-        setCurrentAgentInfo,
+        setSelectedCanvasDetail,
         setAgentInfo,
         setCanvas,
         setIsSubmit,
@@ -150,7 +149,7 @@ const useFabricProvider = () => {
         clearCanvas,
         addQrcode,
         addName,
-        currentAgentInfo,
+        selectedCanvasDetail,
         agentInfo,
         isSubmit,
         loadFromJson,

@@ -2,11 +2,11 @@ import React from 'react'
 import { useFabric } from '../context/FabricContext'
 
 const CanvasBackground = ({ setIsSubmit }) => {
-	const  { currentAgentInfo, setCurrentAgentInfo, agentInfo, clearCanvas, canvas, addQrcode, addName } = useFabric();
+	const  { selectedCanvasDetail, setSelectedCanvasDetail, agentInfo, clearCanvas, canvas, addQrcode, addName } = useFabric();
 	
 	const onClickBg = ( e ) => {
 		const id = e.target.id;
-		if( currentAgentInfo.id == id ) return;
+		if( selectedCanvasDetail.id == id ) return;
 
 		const selectedObj = agentInfo.canvasDetails.filter( obj => obj.id == id );
 		clearCanvas();
@@ -16,7 +16,7 @@ const CanvasBackground = ({ setIsSubmit }) => {
     if ( selectedObj[0].name?.length ) addName( canvas, selectedObj[0].name )
 		
 		setIsSubmit(false)
-		setCurrentAgentInfo( ...selectedObj )
+		setSelectedCanvasDetail( ...selectedObj )
 	}
 
 	return (
