@@ -20,11 +20,11 @@ import SAMPLE_JSON from "./sample_save_as.json" // From server
 let AGENT_INFO = { // default demo use
   // ...SAMPLE_JSON
   agentId: 155,
-  canvasDetails: [
-    { id: 1, background: BACKGROUND_1, json: "", qrcodeBase64: QrCodeSample, profileStatus: false, name: 'Wilker' },
+  canvasDetails: [  
+    { id: 1, background: BACKGROUND_1, json: "", qrcodeBase64: QrCodeSample, name: 'Wilker' },
     { id: 2, background: BACKGROUND_2, json: "", qrcodeBase64: "" },
     { id: 3, background: BACKGROUND_3, json: "", qrcodeBase64: QrCodeSample },
-    { id: 4, background: BACKGROUND_4, json: "", qrcodeBase64: "", avatarIsFull: false, avatars: [] }
+    { id: 4, background: BACKGROUND_4, json: "", qrcodeBase64: "", avatars: [] }
   ],
 }
 

@@ -5,7 +5,7 @@ import { useFabric } from '../context/FabricContext'
 const InputProfile = () => {
   const { selectedCanvasDetail, setSelectedCanvasDetail, setCanvasObjectStatus, canvasObjectStatus, canvas } = useFabric();
 
-  const addIntoCanvas = ( base64) => {
+  const addIntoCanvas = ( base64 ) => {
      fabric.Image.fromURL( base64, img => {
       const clipPath = new fabric.Rect({ width: 180, height: 250, left: 50, top: 133, absolutePositioned: true });
       const canvCenter = canvas.getCenter();

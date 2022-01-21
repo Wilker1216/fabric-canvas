@@ -58,10 +58,11 @@ const useFabricProvider = () => {
               setCanvasObjectStatus({ ...canvasObjectStatus, profile: false })
               break;
             case "avatar":
-              setSelectedCanvasDetail({ ...selectedCanvasDetail, avatarIsFull: false }); break;
+              setSelectedCanvasDetail( selectedCanvasDetail ); 
+              setIsSubmit( false );
+              break;
             default: console.log("Didn't updated")
           }
-          
           
           canvas.remove(target);
           canvas.requestRenderAll();
