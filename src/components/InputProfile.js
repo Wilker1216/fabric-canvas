@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { fabric } from 'fabric';
 import { useFabric } from '../context/FabricContext'
 
@@ -40,11 +40,14 @@ const InputProfile = () => {
     reader.readAsDataURL(file);
   }
 
-  if ( canvasObjectStatus.profile ) return null;
+  // hard code
+  if( !selectedCanvasDetail.json && selectedCanvasDetail.id === 1 ) return <input onChange={onChangeProfile} type="file" id="profile" />
+
+  if ( canvasObjectStatus.profile || canvasObjectStatus.profile === undefined ) return null;
 
   return (
     <input onChange={onChangeProfile} type="file" id="profile" />
-  )
+  ) 
 }
 
 export default InputProfile

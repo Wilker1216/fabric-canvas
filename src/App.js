@@ -18,43 +18,39 @@ import Avatar from './components/Avatar';
 import SAMPLE_JSON from "./sample_save_as.json" // From server
 
 let AGENT_INFO = { // default demo use
-  // ...SAMPLE_JSON
-  agentId: 155,
-  canvasDetails: [  
-    { id: 1, background: BACKGROUND_1, json: "", qrcodeBase64: QrCodeSample, name: 'Wilker' },
-    { id: 2, background: BACKGROUND_2, json: "", qrcodeBase64: "" },
-    { id: 3, background: BACKGROUND_3, json: "", qrcodeBase64: QrCodeSample },
-    { id: 4, background: BACKGROUND_4, json: "", qrcodeBase64: "", avatars: [] }
-  ],
+  ...SAMPLE_JSON
+  // agentId: 155,
+  // canvasDetails: [  
+  //   { id: 1, background: BACKGROUND_1, json: "", qrcode: QrCodeSample, name: 'Wilker' },
+  //   { id: 2, background: BACKGROUND_2, json: "", qrcode: "" },
+  //   { id: 3, background: BACKGROUND_3, json: "", qrcode: QrCodeSample },
+  //   { id: 4, background: BACKGROUND_4, json: "", qrcode: QrCodeSample }
+  // ],
 }
 
 const App = () => {
   const [ agentCanvas, setAgentCanvas ] = useState({});
-  const { selectedCanvasDetail, setSelectedCanvasDetail, canvas, setCanvas, setIsSubmit, isSubmit, loadJsonIntoCanvas, loadSelectedCanvasObject } = useFabric();
+  const { selectedCanvasDetail, setSelectedCanvasDetail, canvas, setCanvas, setIsSubmit, isSubmit, loadJsonIntoCanvas, loadValueFromField, initCanvas } = useFabric();
 
   useEffect(() => {
-    const canvas = new fabric.Canvas('canvas', {
-      width: 355,
-      height: 500,
-      selection: false,
-    });
+    const canvas = initCanvas()
     
-    console.log(`AGENT_INFO:: `, AGENT_INFO)
     // Call API & set value into state
-    const defaultCanvasShow = AGENT_INFO.canvasDetails[0];
+    const defaultSelectedCanvasDetail = AGENT_INFO.canvasDetails[0];
     
     setCanvas( canvas )
     setAgentCanvas( AGENT_INFO ) // Data getting From API
-    setSelectedCanvasDetail( defaultCanvasShow )
-
-    loadSelectedCanvasObject( canvas, defaultCanvasShow )
+    setSelectedCanvasDetail( defaultSelectedCanvasDetail )
+    loadValueFromField( canvas, defaultSelectedCanvasDetail )
   }, [])
 
   useEffect(() => {
     if (!selectedCanvasDetail.id) return;
-
-    // if already saved in database
-    if (selectedCanvasDetail.json.objects?.length) return loadJsonIntoCanvas();
+    // already convert into json
+    if (selectedCanvasDetail.json?.objects?.length) {
+      Promise.all([ loadJsonIntoCanvas() ]).then(() => loadValueFromField( canvas, selectedCanvasDetail ) )
+      return true;
+    }
 
     const initCanvasBackground = () => {
       fabric.Image.fromURL(selectedCanvasDetail.background, img => {
@@ -94,7 +90,7 @@ const App = () => {
     e.preventDefault();
 
     const tmp = JSON.parse(JSON.stringify(selectedCanvasDetail));
-    tmp.json = canvas.toJSON([ "customType", "selectable", "mtr", "_controlsVisibility", "status" ]);
+    tmp.json = canvas.toJSON([ "customType", "selectable", "mtr", "_controlsVisibility", "status", "avatar_id" ]);
     if( !tmp.json.objects?.length ) return alert("Something went wrong")
 
     const newAgentAgentCanvas = agentCanvas.canvasDetails.map( obj => obj.id === selectedCanvasDetail.id ? { ...tmp } : obj )

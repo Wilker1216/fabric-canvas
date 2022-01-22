@@ -23,8 +23,17 @@ const useFabricProvider = () => {
     const [canvas, setCanvas] = useState('');
 
     useEffect(() => {
-        initEvents( )
+        initEvents()
     }, [ canvas ])
+
+    const initCanvas = () => {
+        const canvas = new fabric.Canvas('canvas', {
+            width: 355,
+            height: 500,
+            selection: false,
+        });
+        return canvas;
+    }
     
     const initEvents = () => {
         fabric.Object.prototype.transparentCorners = false;
@@ -53,13 +62,12 @@ const useFabricProvider = () => {
           var canvas = target.canvas;
           switch( target.customType ) {
             case "profile":
-              setSelectedCanvasDetail( selectedCanvasDetail );
               setIsSubmit( false );
               setCanvasObjectStatus({ ...canvasObjectStatus, profile: false })
               break;
             case "avatar":
-              setSelectedCanvasDetail( selectedCanvasDetail ); 
               setIsSubmit( false );
+              setCanvasObjectStatus({ ...canvasObjectStatus, avatar: false })
               break;
             default: console.log("Didn't updated")
           }
@@ -84,21 +92,6 @@ const useFabricProvider = () => {
             if (obj === canvas.backgroundImage) return;
             canvas.remove(obj)
         })
-    }
-
-    const loadJsonIntoCanvas = () => {
-        canvas.loadFromJSON(selectedCanvasDetail.json, function() {
-            let canvasObjectStatus = {};
-            selectedCanvasDetail.json.objects.forEach( obj => {
-                const type = obj["customType"];
-                canvasObjectStatus[ type ] = obj.status;
-            })
-
-            console.log(`canvasObjectStatus:: `, canvasObjectStatus)
-            setCanvasObjectStatus( canvasObjectStatus );
-        })
-        setIsSubmit(false)
-        canvas.renderAll();
     }
 
     const addName = ( canvas, name ) => {
@@ -150,12 +143,37 @@ const useFabricProvider = () => {
         })
     }
 
-    const loadSelectedCanvasObject = ( canvas, selectedCanvas ) => {
-        if ( selectedCanvas.qrcodeBase64?.length ) addQrcode( canvas, selectedCanvas.qrcodeBase64 )
+    const loadJsonIntoCanvas = () => {
+        /**
+            Remove which may be Editable in table field from Server. Eg: qrcode, name
+        */
+        const removeTypes = [ "qrcode", "name" ];
+        const filtered = selectedCanvasDetail.json.objects.filter( obj => removeTypes.indexOf( obj["customType"] ) === -1);
+
+        const json = { ...selectedCanvasDetail.json, objects: filtered }
+
+        canvas.loadFromJSON( json, function() {
+            let canvasObjectStatus = {};
+            selectedCanvasDetail.json.objects.forEach( obj => {
+                const type = obj["customType"];
+                canvasObjectStatus[ type ] = obj.status;
+            })
+            setCanvasObjectStatus( canvasObjectStatus );
+        })
+        setIsSubmit(false)
+        canvas.renderAll();
+    }
+
+    const loadValueFromField = ( canvas, selectedCanvas ) => {
+        /**
+            Add Those Editable table field From Server.
+         */
+        if ( selectedCanvas.qrcode?.length ) addQrcode( canvas, selectedCanvas.qrcode )
         if ( selectedCanvas.name?.length ) addName( canvas, selectedCanvas.name )
     }
     
     return {
+        initCanvas,
         setCanvas,
         canvas,
         setSelectedCanvasDetail,
@@ -165,7 +183,7 @@ const useFabricProvider = () => {
         setCanvasObjectStatus,
         canvasObjectStatus,
         clearCanvas,
-        loadSelectedCanvasObject,
+        loadValueFromField,
         loadJsonIntoCanvas,
     }
 }

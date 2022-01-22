@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFabric } from '../context/FabricContext'
 
 const CanvasBackground = ({ canvasDetails }) => {
-	const  { selectedCanvasDetail, setSelectedCanvasDetail, clearCanvas, canvas, setIsSubmit, loadSelectedCanvasObject } = useFabric();
+	const  { selectedCanvasDetail, setSelectedCanvasDetail, clearCanvas, canvas, setIsSubmit, loadValueFromField } = useFabric();
 	
 	const onClickBg = ( e ) => {
 		const id = e.target.id;
@@ -10,11 +10,10 @@ const CanvasBackground = ({ canvasDetails }) => {
 
 		const selectedObj = canvasDetails.filter( obj => obj.id == id );
 		clearCanvas();
-		
 
-		loadSelectedCanvasObject( canvas, ...selectedObj )
 		setIsSubmit(false)
 		setSelectedCanvasDetail( ...selectedObj )
+		loadValueFromField( canvas, ...selectedObj )
 	}
 	
 	if( !canvasDetails ) return <div>Loading...</div>
