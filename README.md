@@ -12,11 +12,11 @@
 
 const AGENT_INFO = {
   agentId: 155, // to update the correct agent in database
-  canvasDetails: [
-    { id: 1, background: BG_BASE64_1, json: "", qrcodeBase64: Qr_BASE64, profileStatus: false, name: 'Wilker' },
-    { id: 2, background: BG_BASE64_2, json: "", qrcodeBase64: Qr_BASE64 },
-    { id: 3, background: BG_BASE64_3, json: "", qrcodeBase64: Qr_BASE64 },
-    { id: 4, background: BG_BASE64_4, json: "", qrcodeBase64: Qr_BASE64, avatarIsFull: false, avatars: [] }
+  canvasDetails: [  
+    { id: 1, background: BACKGROUND_1, json: "", qrcode: QrCodeSample, name: 'Wilker' },
+    { id: 2, background: BACKGROUND_2, json: "", qrcode: "" },
+    { id: 3, background: BACKGROUND_3, json: "", qrcode: QrCodeSample },
+    { id: 4, background: BACKGROUND_4, json: "", qrcode: QrCodeSample }
   ],
 }
 
@@ -30,6 +30,3 @@ const AGENT_INFO = {
 5. Admin allow to create clipPath ( Phase 2 )
 6. Admin allow to draw Circle & Rectangle image ( Phase 2 )
 7. Drag and Drop ( Phase 2 )
-
-# Logs
-1. Last Template Feature is not completed yet.
