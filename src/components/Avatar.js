@@ -11,7 +11,7 @@ const CLIP_PATHS = [
 ]
 
 const Avatar = () => {
-  const { selectedCanvasDetail, setSelectedCanvasDetail, setCanvasObjectStatus, canvasObjectStatus, canvas } = useFabric();
+  const { setCanvasObjectStatus, canvasObjectStatus, canvas } = useFabric();
   const [ avatarClipPaths, setAvatarClipPaths ] = useState();
 
   useEffect(() => {
@@ -72,7 +72,7 @@ const Avatar = () => {
       setCanvasObjectStatus( canvasObjectStatus );
     });
 
-    setSelectedCanvasDetail( selectedCanvasDetail )
+    // setSelectedCanvasDetail( selectedCanvasDetail )
     reader.readAsDataURL( file );
   }
   

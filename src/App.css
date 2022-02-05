@@ -1,19 +1,46 @@
 .App {
   display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  justify-content: space-around;
+  height: 100vh;
   background-color: #282c34;
   color: white;
   padding: 1rem 2rem;
+}
+
+#canvas {
+  border: 2px solid yellow;
 }
 
 .bg-image {
   width: 100px;
 }
 
+.hidden {
+  display: none;
+}
+
+.detailBox {
+  border: 1px solid mintcream;
+  background-color: mistyrose;
+  padding: 0.5rem;
+  color: #282c34;
+  max-width: 250px;
+  min-width: 70px;
+  overflow: hidden;
+  transition: max-height 1450ms ease-in-out;
+}
+.detailBox.h-0 {
+  padding: 0;
+  border: 0;
+  max-height: 0px;
+}
+.detailBox.h-100 {
+  max-height: 300px;
+}
+
 .features { 
   display: flex;
-  align-items: center;
+  flex-direction: column;
 }
 
 .exports a:nth-child(2) {
@@ -33,4 +60,15 @@
 }
 .save a:last-child {
   margin-left: 1rem;
+}
+
+/*  */
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+  cursor: move;
 }

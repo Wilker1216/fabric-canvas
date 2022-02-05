@@ -3,7 +3,7 @@ import { fabric } from 'fabric';
 import { useFabric } from '../context/FabricContext'
 
 const InputProfile = () => {
-  const { selectedCanvasDetail, setSelectedCanvasDetail, setCanvasObjectStatus, canvasObjectStatus, canvas } = useFabric();
+  const { setCanvasObjectStatus, canvasObjectStatus, canvas } = useFabric();
 
   const addIntoCanvas = ( base64 ) => {
      fabric.Image.fromURL( base64, img => {
@@ -36,12 +36,12 @@ const InputProfile = () => {
       addIntoCanvas( base64 );
       setCanvasObjectStatus({ ...canvasObjectStatus, profile: true });
     }
-    setSelectedCanvasDetail( selectedCanvasDetail )
+    // setSelectedCanvasDetail( selectedCanvasDetail )
     reader.readAsDataURL(file);
   }
 
   // hard code
-  if( !selectedCanvasDetail.json && selectedCanvasDetail.id === 1 ) return <input onChange={onChangeProfile} type="file" id="profile" />
+  // if( !selectedCanvasDetail.json && selectedCanvasDetail.id === 1 ) return <input onChange={onChangeProfile} type="file" id="profile" />
 
   if ( canvasObjectStatus.profile || canvasObjectStatus.profile === undefined ) return null;
 

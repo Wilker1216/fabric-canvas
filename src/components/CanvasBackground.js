@@ -1,34 +1,39 @@
 import React, { useEffect } from 'react'
+import { fabric } from 'fabric';
 import { useFabric } from '../context/FabricContext'
 
 const CanvasBackground = ({ canvasDetails }) => {
-	const  { selectedCanvasDetail, setSelectedCanvasDetail, clearCanvas, canvas, setIsSubmit, loadValueFromField } = useFabric();
 	
-	const onClickBg = ( e ) => {
-		const id = e.target.id;
-		if( selectedCanvasDetail.id == id ) return;
+	const { canvas, setBackground } = useFabric();
 
-		const selectedObj = canvasDetails.filter( obj => obj.id == id );
-		clearCanvas();
+	const uploadBackground = ( e ) => {
+    const reader = new FileReader();
+    const file = e.target.files[0];
 
-		setIsSubmit(false)
-		setSelectedCanvasDetail( ...selectedObj )
-		loadValueFromField( canvas, ...selectedObj )
-	}
-	
-	if( !canvasDetails ) return <div>Loading...</div>
-	
+    reader.onload = function (event) {
+      const base64 = event.target.result;
+
+      fabric.Image.fromURL( base64, function( img ){
+        img.set({
+          scaleX: canvas.width / img.width,
+          scaleY: canvas.height / img.height
+        })
+
+				canvas.defaultCursor = "default"
+        canvas.setBackgroundImage(img);
+        canvas.requestRenderAll();
+      })
+    }
+
+    reader.readAsDataURL(file);
+		setBackground( true )
+  }
+
 	return (
-		<div>
-			<h4>canvasDetails</h4>
-			<div>
-				{
-					canvasDetails.map((item, i) => (
-						<img key={item.id} onClick={ onClickBg } className='bg-image cursor-pointer' id={item.id} src={ item.background } alt={`background_${ item.id }`} />
-					))
-				}
-			</div>
-		</div>
+	  <label>
+			Upload Background
+			<input onChange={ uploadBackground } type="file" id="uploadBackground" name="uploadBackground" />
+		</label>
 	)
 }
 
